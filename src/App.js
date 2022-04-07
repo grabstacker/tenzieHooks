@@ -1,24 +1,96 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Die from "./components/Die";
+import "./App.css";
+import { nanoid } from "nanoid";
 
 function App() {
+  //declear state
+  const [dieArray, setDieArray] = useState(allNewDice);
+  //Game won flag
+  const [tenzies, setTenzies] = useState(false);
+
+  //check arrays for winning combination
+  useEffect(() => {
+    //checks every die array item to be the same and returns true if true
+    const allHeld = dieArray.every((die) => die.isHeld);
+    if (allHeld) {
+      //checks every die array item to be the same and returns true if true
+      const youWon = dieArray.every((die) => die.value);
+      if (youWon) {
+        setTenzies(true);
+        alert("you won");
+      }
+    }
+    //only runs when diearray changes
+  }, [dieArray]);
+
+  //creates a new object to add to the array
+  function generateNewDie() {
+    return {
+      id: nanoid(),
+      value: Math.ceil(Math.random() * 6),
+      isHeld: false,
+    };
+  }
+
+  //calls generate new dice 10 times and creates an new array from it
+  function allNewDice() {
+    const newDice = [];
+
+    for (let i = 0; i < 10; i++) {
+      newDice.push(generateNewDie());
+    }
+
+    return newDice;
+  }
+
+  //checks for end game resets values or rolls more game dice
+  function rollDice() {
+    if (tenzies) {
+      setDieArray(allNewDice());
+      setTenzies(false);
+    } else {
+      setDieArray((oldDice) =>
+        oldDice.map((die) => {
+          return die.isHeld ? die : generateNewDie();
+        })
+      );
+    }
+  }
+
+  //changes the value of isHeld to true for clicked dice
+  function holdDice(id) {
+    setDieArray((oldDice) =>
+      oldDice.map((die) => {
+        return die.id === id ? { ...die, isHeld: !die.isHeld } : die;
+      })
+    );
+  }
+  // render the die components and titles with roll dice button
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+      <div className="title">
+        <h1>Tenzies</h1>
+        <h4>
+          Roll untill all dice are the same. Click <br></br>
+          each die to freeze it at its current value<br></br>
+          between rolls
+        </h4>
+      </div>
+      <div className="dice-container">
+        {dieArray.map((die) => (
+          <Die
+            key={die.id}
+            value={die.value}
+            holdDice={() => holdDice(die.id)}
+            isHeld={die.isHeld}
+          />
+        ))}
+      </div>
+      <button className="die-face-button" onClick={rollDice}>
+        {tenzies ? <span>Restart game</span> : <span>Roll Dice</span>}
+      </button>
+    </main>
   );
 }
 
