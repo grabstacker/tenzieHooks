@@ -17,7 +17,7 @@ function App() {
     const allHeld = dieArray.every((die) => die.isHeld);
     if (allHeld) {
       //checks every die array item to be the same and returns true if true
-      const youWon = dieArray.every((die) => die.value);
+      const youWon = dieArray.every((die) => die.value === dieArray[0].value);
       if (youWon) {
         setTenzies(true);
         alert("you won");
