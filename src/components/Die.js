@@ -1,3 +1,4 @@
+import React from "react";
 export default function Die(props) {
   //changes background style with ternery operand
   const styles = {

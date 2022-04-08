@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import Die from "./components/Die";
 import "./App.css";
 import { nanoid } from "nanoid";
+import Stopwatch from "./components/Stopwatch";
 
 function App() {
   //declear state
   const [dieArray, setDieArray] = useState(allNewDice);
   //Game won flag
   const [tenzies, setTenzies] = useState(false);
-
+  //Track rolls it took to win game
+  const [numRolls, setNumRolls] = useState(1);
   //check arrays for winning combination
   useEffect(() => {
     //checks every die array item to be the same and returns true if true
@@ -49,7 +51,11 @@ function App() {
     if (tenzies) {
       setDieArray(allNewDice());
       setTenzies(false);
+      //user starts a new game when allNewDice is called so start rolls at 1
+      setNumRolls(1);
     } else {
+      //checks if die isHeld if it is return the die as it is else return a new die
+      setNumRolls((prevRolls) => prevRolls + 1);
       setDieArray((oldDice) =>
         oldDice.map((die) => {
           return die.isHeld ? die : generateNewDie();
@@ -89,6 +95,9 @@ function App() {
       </div>
       <button className="die-face-button" onClick={rollDice}>
         {tenzies ? <span>Restart game</span> : <span>Roll Dice</span>}
+      </button>
+      <button className="die-face-button">
+        <span>Rolls: {numRolls}</span>
       </button>
     </main>
   );
